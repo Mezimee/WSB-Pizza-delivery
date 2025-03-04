@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Potwierdzenie Zamówienia</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Twoje zamówienie zostało złożone! 🎉</h1>
+    </header>
+    <section>
+        <h2>Numer zamówienia: <span id="order-number"></span></h2>
+        <h3>Twoje zamówienie:</h3>
+        <ul id="order-details"></ul>
+        <a href="main.html">Powrót do strony głównej</a>
+    </section>
+    <script>
+        function getQueryParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const orderDetails = JSON.parse(decodeURIComponent(getQueryParam("order")));
+            const orderNumber = getQueryParam("orderNumber");
+
+            document.getElementById("order-number").textContent = orderNumber;
+
+            const orderList = document.getElementById("order-details");
+            orderDetails.forEach(item => {
+                const li = document.createElement("li");
+                li.textContent = `${item.item} - ${item.price} zł`;
+                orderList.appendChild(li);
+            });
+        });
+    </script>
+</body>
+</html>

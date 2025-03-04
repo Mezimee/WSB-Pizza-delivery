@@ -1,46 +1,56 @@
 let cart = [];
+let totalPrice = 0;
 
-function addToCart(item) {
-    cart.push(item);
-    updateCartDisplay();
+// Dodawanie produktu do koszyka
+function addToCart(item, price) {
+    cart.push({ item, price });
+    totalPrice += price;
+    updateCart();
 }
 
-function updateCartDisplay() {
-    const cartList = document.getElementById("cart");
+// Aktualizacja koszyka
+function updateCart() {
+    const cartList = document.getElementById('cart');
+    const totalPriceElement = document.getElementById('total-price');
+    const orderInput = document.getElementById('order-input');
+
     cartList.innerHTML = "";
-    cart.forEach((item, index) => {
-        const li = document.createElement("li");
-        li.textContent = item;
-        cartList.appendChild(li);
+    cart.forEach((product, index) => {
+        const listItem = document.createElement('li');
+        listItem.textContent = `${product.item} - ${product.price} zł`;
+
+        // Dodanie przycisku do usuwania produktu
+        const removeButton = document.createElement('button');
+        removeButton.textContent = "❌";
+        removeButton.onclick = () => removeFromCart(index);
+        listItem.appendChild(removeButton);
+
+        cartList.appendChild(listItem);
     });
-    document.getElementById("order-input").value = JSON.stringify(cart);
+
+    totalPriceElement.textContent = totalPrice.toFixed(2); // Wyświetlanie sumy z dwoma miejscami po przecinku
+    orderInput.value = JSON.stringify(cart); // Przekazanie koszyka do formularza zamówienia
 }
 
-document.getElementById("order-form").addEventListener("submit", async function(event) {
+// Usuwanie produktu z koszyka
+function removeFromCart(index) {
+    totalPrice -= cart[index].price;
+    cart.splice(index, 1);
+    updateCart();
+}
+
+// Formularz zamówienia
+document.getElementById('order-form').addEventListener('submit', function(event) {
     event.preventDefault();
     
-    const formData = new FormData(event.target);
-    const orderData = Object.fromEntries(formData.entries());
-    
-    try {
-        const response = await fetch("https://your-gcp-endpoint.com/orders", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(orderData)
-        });
-        
-        if (response.ok) {
-            alert("Zamówienie zostało wysłane!");
-            cart = [];
-            updateCartDisplay();
-            event.target.reset();
-        } else {
-            alert("Błąd podczas składania zamówienia.");
-        }
-    } catch (error) {
-        console.error("Błąd połączenia z serwerem", error);
-        alert("Nie udało się połączyć z serwerem.");
+    if (cart.length === 0) {
+        alert("Koszyk jest pusty! Dodaj coś do zamówienia.");
+        return;
     }
+
+    const orderNumber = Math.floor(100000 + Math.random() * 900000); // Losowy numer zamówienia
+    const orderDetails = encodeURIComponent(JSON.stringify(cart));
+
+    window.location.href = `potwierdzenie.html?order=${orderDetails}&orderNumber=${orderNumber}`;
 });
+
