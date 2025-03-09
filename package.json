@@ -1,0 +1,14 @@
+{
+  "name": "pizzeria-app",
+  "version": "1.0.0",
+  "description": "WSB-Pizza-delivery",
+  "main": "models.js",
+  "scripts": {
+    "start": "node models.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "mysql2": "^3.6.0",
+    "cors": "^2.8.5"
+  }
+}
